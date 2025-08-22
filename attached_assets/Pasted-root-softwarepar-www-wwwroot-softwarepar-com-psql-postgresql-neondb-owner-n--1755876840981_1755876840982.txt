@@ -1,0 +1,96 @@
+root@softwarepar:/www/wwwroot/softwarepar.com# psql 'postgresql://neondb_owner:n                                                                                                 pg_7wSmBL4Munbe@ep-ancient-poetry-acbu2opi-pooler.sa-east-1.aws.neon.tech/neondb                                                                                                 ?sslmode=require&channel_binding=require'
+psql (17.5 (Ubuntu 17.5-1.pgdg24.04+1), server 16.9)
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression:                                                                                                  off, ALPN: postgresql)
+Type "help" for help.
+
+neondb=>
+-- SCRIPTS PARA CORREGIR ERRORES DE CASH SCHEDULE
+-- Ejecutar estos comandos en orden en la consola de Neon
+
+-- 1. CREAR TABLA FALTANTE cash_schedule_operations_log
+CREATE TABLE IF NOT EXISTS cash_schedule_operations_log (
+  id SERIAL PRIMARY KEY,
+  client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  type TEXT NOT NULL, -- 'auto_open', 'auto_close', 'manual_open', 'manual_close                                                                                                 '
+  scheduled_time TIMESTAMP,
+  executed_time TIMESTAMP DEFAULT NOW(),
+  status TEXT DEFAULT 'success', -- 'success', 'failed', 'skipped'
+  period_name TEXT,
+  error_message TEXT,
+  notes TEXT,
+  cash_register_id INTEGER REFERENCES cash_register(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 2. CREAR ÍNDICES PARA PERFORMANCE
+CREATE INDEX IF NOT EXISTS idx_cash_schedule_operations_log_client_id ON cash_sc                                                                                                 hedule_operations_log(client_id);
+CREATE INDEX IF NOT EXISTS idx_cash_schedule_operations_log_type ON cash_schedul                                                                                                 ORDER BY table_name, ordinal_position;erations_log', 'cash_schedule_periods', 'c
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+NOTICE:  relation "cash_schedule_periods" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "cash_schedule_client_config" already exists, skipping
+CREATE TABLE
+NOTICE:  relation "idx_cash_schedule_periods_client_day" already exists, skippin                                                                                                 g
+CREATE INDEX
+NOTICE:  relation "idx_cash_schedule_periods_client_active" already exists, skip                                                                                                 ping
+CREATE INDEX
+NOTICE:  relation "idx_cash_schedule_client_config_client" already exists, skipp                                                                                                 ing
+CREATE INDEX
+COMMENT
+COMMENT
+COMMENT
+          table_name          |         column_name         |          data_type
+------------------------------+-----------------------------+-----------------------------
+ cash_schedule_client_config  | id                          | integer
+ cash_schedule_client_config  | client_id                   | integer
+ cash_schedule_client_config  | timezone                    | character varying
+ cash_schedule_client_config  | auto_schedule_enabled       | boolean
+ cash_schedule_client_config  | notification_enabled        | boolean
+ cash_schedule_client_config  | notification_minutes_before | integer
+ cash_schedule_client_config  | created_at                  | timestamp without time zone
+ cash_schedule_client_config  | updated_at                  | timestamp without time zone
+ cash_schedule_operations_log | id                          | integer
+ cash_schedule_operations_log | client_id                   | integer
+ cash_schedule_operations_log | type                        | text
+ cash_schedule_operations_log | scheduled_time              | timestamp without time zone
+ cash_schedule_operations_log | executed_time               | timestamp without time zone
+ cash_schedule_operations_log | status                      | text
+ cash_schedule_operations_log | period_name                 | text
+ cash_schedule_operations_log | error_message               | text
+ cash_schedule_operations_log | notes                       | text
+ cash_schedule_operations_log | cash_register_id            | integer
+ cash_schedule_operations_log | created_at                  | timestamp without time zone
+ cash_schedule_periods        | id                          | integer
+ cash_schedule_periods        | client_id                   | integer
+ cash_schedule_periods        | day_of_week                 | integer
+ cash_schedule_periods        | period_name                 | character varying
+ cash_schedule_periods        | open_hour                   | integer
+ cash_schedule_periods        | open_minute                 | integer
+ cash_schedule_periods        | close_hour                  | integer
+ cash_schedule_periods        | close_minute                | integer
+ cash_schedule_periods        | auto_open_enabled           | boolean
+ cash_schedule_periods        | auto_close_enabled          | boolean
+ cash_schedule_periods        | is_active                   | boolean
+ cash_schedule_periods        | priority_order              | integer
+ cash_schedule_periods        | created_at                  | timestamp without time zone
+ cash_schedule_periods        | updated_at                  | timestamp without time zone
+(33 rows)
+
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+(END)
